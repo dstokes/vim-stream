@@ -24,13 +24,13 @@ var ctrl = {
   0x19: '^y'
 };
 
-var INSERT =  0x1
+var INSERT = 0x1
   , NORMAL = 0x2
   , VISUAL = 0x3
   , COMMAND = 0x4;
 
 module.exports = function() {
-  var MODE = INSERT;
+  var MODE = NORMAL;
 
   function write(buf) {
     for (var i = 0, l = buf.length; i < l; i++) {
@@ -41,22 +41,23 @@ module.exports = function() {
       }
 
       // escape
-      else if (buf[i] === 0x1B) {
+      else if (buf[i] === 0x1B /* ESC */ ||
+               buf[i] === 0x0d /* ENTER */) {
         MODE = NORMAL;
       }
 
       else if (MODE !== INSERT) {
         if (buf[i] === 0x20 /* SPACE */) continue;
-        if (buf[i] === 0x0d /* ENTER */) {
-          if (MODE === COMMAND) MODE = NORMAL;
-          continue;
-        }
         if (ctrl[buf[i]]) {
           this.queue(ctrl[buf[i]]);
         } else {
           if (buf[i] === 0x3a /* : */ ||
               buf[i] === 0x3b /* ; */)  {
             MODE = COMMAND;
+          }
+          // discard invalid chars
+          if (buf[i] >= 0x7e || buf[i] <= 0x1f) {
+            continue;
           }
           this.queue(String.fromCharCode(buf[i]));
         }
