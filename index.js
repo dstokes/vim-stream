@@ -8,7 +8,8 @@ var inserts = {
   0x61: 'a',
   0x63: 'c',
   0x69: 'i',
-  0x6f: 'o'
+  0x6f: 'o',
+  0x2f: '/'
 };
 
 var ctrl = {
@@ -23,30 +24,40 @@ var ctrl = {
   0x19: '^y'
 };
 
+var INSERT =  0x1
+  , NORMAL = 0x2
+  , VISUAL = 0x3
+  , COMMAND = 0x4;
+
 module.exports = function() {
-  var insert = false;
+  var MODE = INSERT;
 
   function write(buf) {
-    var leftInsert = 0;
     for (var i = 0, l = buf.length; i < l; i++) {
-      // switched to insert mode
-      if (inserts[buf[i]]) {
-        insert = true;
+      // switched to insert MODE
+      if (inserts[buf[i]] && MODE !== COMMAND) {
+        MODE = INSERT;
         this.queue(String.fromCharCode(buf[i]) +"\n");
       }
 
       // escape
       else if (buf[i] === 0x1B) {
-        insert = false;
+        MODE = NORMAL;
       }
 
-      else if (insert === false) {
-        // var end = i+1;
-        // this.queue(buf.toString('utf8', i, end));
-        if (buf[i] === 0x20) return;
+      else if (MODE !== INSERT) {
+        if (buf[i] === 0x20 /* SPACE */) continue;
+        if (buf[i] === 0x0d /* ENTER */) {
+          if (MODE === COMMAND) MODE = NORMAL;
+          continue;
+        }
         if (ctrl[buf[i]]) {
           this.queue(ctrl[buf[i]]);
         } else {
+          if (buf[i] === 0x3a /* : */ ||
+              buf[i] === 0x3b /* ; */)  {
+            MODE = COMMAND;
+          }
           this.queue(String.fromCharCode(buf[i]));
         }
       }
