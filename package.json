@@ -4,7 +4,7 @@
   "description": "Parse keystrokes into vim commands",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/lexer.js"
   },
   "author": "Drew Stokes",
   "license": "ISC",
@@ -14,7 +14,9 @@
   "bin": {
     "vim-lexer-stream": "lexer.js"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tape": "~2.4.2"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/dstokes/vim-lexer-stream.git"
