@@ -1,3 +1,6 @@
+#! /usr/bin/env node
+/* vim: set syntax=JavaScript : */
+
 process.stdin
   .pipe(require('../')())
   .pipe(process.stdout);
