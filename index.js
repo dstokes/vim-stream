@@ -1,12 +1,5 @@
 var through = require('through');
 
-/**
- * Queue all non-insert mode chars
- * Emit command groups and meta characters
- *
- *
- */
-
 var inserts = {
   0x41: 'A',
   0x43: 'C',
@@ -36,10 +29,7 @@ var ctrl = {
 var INSERT = 0x1
   , NORMAL = 0x2
   , VISUAL = 0x3
-  , COMMAND = 0x4
-  // states
-  , COUNT = 0x5
-  ;
+  , COMMAND = 0x4;
 
 module.exports = function() {
   var MODE = NORMAL
@@ -49,6 +39,7 @@ module.exports = function() {
   function write (buf) {
     // convert strings to buffers
     if (typeof buf === "string") buf = new Buffer(buf);
+
     for (var i = 0, l = buf.length; i < l; i++) {
       var c = buf[i];
 
@@ -91,13 +82,11 @@ module.exports = function() {
         this.queue(str);
       }
 
-      else if (MODE === VISUAL) {
-
-      }
+      else if (MODE === VISUAL) {}
     }
   }
 
-  function end () { }
+  function end () {}
 
   return through(write, end);
 }
