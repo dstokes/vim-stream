@@ -9,7 +9,8 @@
   "author": "Drew Stokes",
   "license": "ISC",
   "dependencies": {
-    "through": "~2.3.4"
+    "through": "~2.3.4",
+    "minimist": "0.0.7"
   },
   "bin": {
     "vim-stream": "lexer.js"

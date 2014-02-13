@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 /* vim: set syntax=JavaScript : */
+var options = require('minimist')(process.argv.slice(2));
 
 process.stdin
-  .pipe(require('../')())
+  .pipe(require('../')(options))
   .pipe(process.stdout);
