@@ -13,28 +13,17 @@ var inserts = {
   0x3f: '?'
 };
 
-var ctrl = {
-  0x3: '^C',
-  0x4: '^D',
-  0x5: '^E',
-  0x6: '^F',
-  0xf: '^O',
-  0x10: '^P',
-  0x12: '^R',
-  0x15: '^U',
-  0x16: '^V',
-  0x19: '^Y'
-};
-
 var INSERT = 0x1
   , NORMAL = 0x2
   , VISUAL = 0x3
   , COMMAND = 0x4;
 
-module.exports = function() {
+module.exports = function(options) {
   var MODE = NORMAL
     , STATE = null
+    , str = ''
     , cmd = '';
+  options = (options || {});
 
   function write (buf) {
     // convert strings to buffers
@@ -46,7 +35,7 @@ module.exports = function() {
       // escape
       if (c === 0x1b /* ESC */ ||
           c === 0x0d /* ENTER */ ||
-          c === 0x3 /* CTRL-C */) {
+          c === 0x3  /* CTRL-C */) {
 
         if (MODE === COMMAND && c !== 0x1b) {
           this.emit('command', cmd);
@@ -60,7 +49,7 @@ module.exports = function() {
           cmd.slice(0, -1);
           // TODO: queue or emit
         } else {
-          var str = String.fromCharCode(c)
+          str = String.fromCharCode(c)
           cmd += str;
           this.queue(str);
         }
@@ -68,18 +57,23 @@ module.exports = function() {
 
       else if (MODE === NORMAL) {
         // discard invalid chars
-        //if (c >= 0x7e || c <= 0x1f) continue;
+        if (c >= 0x7e) continue;
 
-        // convert buff to string
-        var str = ctrl[c] || String.fromCharCode(c);
-
-        if (inserts[c]) {
-          MODE = INSERT;
-        } else if (c === 0x3a /* : */ || c === 0x3b /* ; */)  {
-          cmd += str;
-          MODE = COMMAND;
+        // meta-chars
+        if (c < 0x20) {
+          if (options.nometa !== true) {
+            this.queue('^'+ String.fromCharCode(parseInt(c, 10) + 64));
+          }
+        } else {
+          str = String.fromCharCode(c);
+          if (inserts[c]) {
+            MODE = INSERT;
+          } else if (c === 0x3a /* : */ || c === 0x3b /* ; */)  {
+            cmd += str;
+            MODE = COMMAND;
+          }
+          this.queue(str);
         }
-        this.queue(str);
       }
 
       else if (MODE === VISUAL) {}

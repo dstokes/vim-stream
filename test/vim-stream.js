@@ -30,3 +30,12 @@ test('groups command mode keystrokes', function(t) {
   });
   s.end('j:%s/foo/bar/\x0d');
 });
+
+test('translates meta/ctrl characters', function(t) {
+  var s = stream()
+    , b = buffer();
+  s.pipe(b);
+  s.end('\x01\x08\x1a\x1d');
+  t.equal(b.buf, '^A^H^Z^]');
+  t.end();
+});
