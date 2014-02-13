@@ -7,12 +7,12 @@ function buffer() {
 }
 
 test('ignores insert mode text', function(t) {
-  var s = stream()
+  var s = stream({ noMeta: true })
     , b = buffer();
   s.pipe(b);
-  var pieces = ['ab', 'Ab', 'ij', 'Ij', 'op', 'Op', 'Cd'];
+  var pieces = ['ab', 'Ab', 'ij', 'Ij', 'op', 'Op', 'Cd', 'a\x0d'];
   s.end(pieces.join('\x1b'));
-  t.equal(b.buf, 'aAiIoOC');
+  t.equal(b.buf, 'aAiIoOCa');
   t.end();
 });
 
