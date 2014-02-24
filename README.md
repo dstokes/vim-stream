@@ -9,9 +9,26 @@ This module is highly experimental.
 
 example
 =======
+Simple parsing:
+
 ``` shell
   echo "ifoo bar\x1b:wq" | vim-stream --noMeta
   i:wq
+```
+
+Quick frequency stats:
+
+``` shell
+  cat ~/.vimlog | vim-stream --noMeta | \
+    sed -e 's/\(.\)/\1\'$'\n/g' | sort | uniq -c | sort -nr
+  2835 k
+  2827 j
+  1307 l
+   821 h
+   152 w
+   136 :
+   114 d
+   ...
 ```
 
 setup
