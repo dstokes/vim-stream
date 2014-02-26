@@ -74,11 +74,17 @@ module.exports = function(options) {
         } else if (c === 0x3a /* : */ || c === 0x3b /* ; */)  {
           cmd += str;
           MODE = COMMAND;
+        } else if (c === 0x56 /* V */ || c === 0x76 /* v */ || c === 0x16 /* CTRLV */) {
+          MODE = VISUAL;
         }
+
         this.queue(str);
       }
 
-      else if (MODE === VISUAL) {}
+      else if (MODE === VISUAL) {
+        if (inserts[c]) MODE = INSERT;
+        this.queue(String.fromCharCode(c));
+      }
     }
   }
 
