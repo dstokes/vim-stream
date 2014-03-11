@@ -1,6 +1,6 @@
 {
   "name": "vim-stream",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Parse keystrokes into vim commands",
   "main": "index.js",
   "scripts": {
