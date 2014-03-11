@@ -42,7 +42,7 @@ test('groups command mode keystrokes', function(t) {
 test('translates meta/ctrl characters', function(t) {
   var s = stream()
     , b = s.pipe(buffer());
-  s.end('\x01\x08\x1a\x1d');
-  t.equal(b.buf, '^A^H^Z^]');
+  s.end('\x01\x08\x1a\x1d\x80kd');
+  t.equal(b.buf, '^A^H^Z^]^H');
   t.end();
 });

@@ -39,7 +39,6 @@ module.exports = function(options) {
 
     for (var i = 0, l = buf.length; i < l; i++) {
       var c = buf[i];
-
       // meta-chars
       if (c < 0x20) {
         if (c === ESC || c === CTRLC) {
@@ -56,6 +55,12 @@ module.exports = function(options) {
         if (options.noMeta !== true) {
           this.queue('^'+ String.fromCharCode(parseInt(c, 10) + 64));
         }
+      }
+
+      // account for special vim backspace code (<80>kb)
+      else if (c === 0x80 && MODE !== INSERT) {
+        i += 2;
+        this.queue('^H');
       }
 
       else if (MODE === COMMAND) {
