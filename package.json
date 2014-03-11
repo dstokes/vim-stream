@@ -12,9 +12,7 @@
     "through": "~2.3.4",
     "minimist": "0.0.7"
   },
-  "bin": {
-    "vim-stream": "lexer.js"
-  },
+  "bin": "./bin/vim-stream",
   "devDependencies": {
     "tape": "~2.4.2"
   },
