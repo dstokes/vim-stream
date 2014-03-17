@@ -24,14 +24,31 @@ var INSERT = 0x1
 
 var ESC = 0x1b
   , ENTER = 0x0d
-  , CTRLC = 0x3;
+  , CTRLC = 0x3
+  , SPACE = 0x20;
+
+function isMeta(ch) { return ch < SPACE; }
+
+// convert hex to string, map meta to ^[char]
+function toChar(ch) {
+  if (typeof ch === 'string') return ch;
+  return isMeta(ch) ?
+    '^'+ String.fromCharCode(parseInt(ch, 10) + 64) :
+    String.fromCharCode(ch);
+}
 
 module.exports = function(options) {
   var MODE = NORMAL
-    , STATE = null
     , str = ''
-    , cmd = '';
+    , cmd = ''
+    , stack = []
+    , stream = through(write, end);
   options = (options || {});
+
+  function queue (ch) {
+    if (isMeta(ch) && options.noMeta) return;
+    stream.queue(toChar(ch));
+  }
 
   function write (buf) {
     // convert strings to buffers
@@ -39,8 +56,9 @@ module.exports = function(options) {
 
     for (var i = 0, l = buf.length; i < l; i++) {
       var c = buf[i];
+
       // meta-chars
-      if (c < 0x20) {
+      if (isMeta(c)) {
         if (c === ESC || c === CTRLC) {
           MODE = NORMAL;
         } else if (c === ENTER) {
@@ -51,49 +69,49 @@ module.exports = function(options) {
             MODE = NORMAL;
           }
         }
+        queue(c);
+      }
 
-        if (options.noMeta !== true) {
-          this.queue('^'+ String.fromCharCode(parseInt(c, 10) + 64));
-        }
+      else if (MODE === INSERT) {
+        continue;
       }
 
       // account for special vim backspace code (<80>kb)
       else if (c === 0x80 && MODE !== INSERT) {
         i += 2;
-        this.queue('^H');
+        queue(0x8);
       }
 
       else if (MODE === COMMAND) {
-        str = String.fromCharCode(c)
+        str = toChar(c)
         cmd += str;
-        this.queue(str);
+        queue(c);
       }
 
       else if (MODE === NORMAL) {
         // discard invalid chars
         if (c >= 0x7e) continue;
 
-        str = String.fromCharCode(c);
         if (inserts[c]) {
           MODE = INSERT;
         } else if (c === 0x3a /* : */ || c === 0x3b /* ; */)  {
-          cmd += str;
+          cmd += toChar(c);
           MODE = COMMAND;
         } else if (c === 0x56 /* V */ || c === 0x76 /* v */ || c === 0x16 /* CTRLV */) {
           MODE = VISUAL;
         }
 
-        this.queue(str);
+        queue(c);
       }
 
       else if (MODE === VISUAL) {
         if (inserts[c]) MODE = INSERT;
-        this.queue(String.fromCharCode(c));
+        queue(c);
       }
     }
   }
 
   function end () {}
 
-  return through(write, end);
+  return stream;
 }
