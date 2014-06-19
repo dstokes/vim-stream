@@ -54,3 +54,8 @@ With [npm](http://npmjs.org) do:
 ```
 npm install vim-stream
 ```
+
+for fun
+=======
+You can now do crazy stuff like generate heatmaps of different keyboard layouts..
+![Heatmaps](http://pbs.twimg.com/media/BhRhArbCcAAUr1r.png)
