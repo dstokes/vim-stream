@@ -2,7 +2,8 @@ vim-stream
 ==========
 A through stream that filters and parses vim keystrokes
 
-[![Build Status](https://travis-ci.org/dstokes/vim-stream.png)](https://travis-ci.org/dstokes/vim-stream)  
+[![Build Status](https://travis-ci.org/dstokes/vim-stream.png)](https://travis-ci.org/dstokes/vim-stream)
+[![Donate](http://img.shields.io/bitcoin/donate.png?color=blue)](https://www.coinbase.com/dstokes)  
 [![NPM](https://nodei.co/npm/vim-stream.png?downloads=true)](https://nodei.co/npm/vim-stream/)  
 
 This module is highly experimental.
