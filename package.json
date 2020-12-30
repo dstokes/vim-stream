@@ -9,10 +9,12 @@
   "author": "Drew Stokes",
   "license": "ISC",
   "dependencies": {
-    "through": "~2.3.4",
-    "minimist": "0.0.7"
+    "minimist": ">=0.2.1",
+    "through": "~2.3.4"
   },
-  "bin": "./bin/vim-stream",
+  "bin": {
+    "vim-stream": "bin/vim-stream"
+  },
   "devDependencies": {
     "tape": "~2.4.2"
   },
